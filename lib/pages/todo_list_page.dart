@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:parateste/models/todo.dart';
+import 'package:parateste/repositories/todo_repository.dart';
 import 'package:parateste/widgets/todo_list_item.dart';
 
 class ToDoListPage extends StatefulWidget {
@@ -11,6 +12,7 @@ class ToDoListPage extends StatefulWidget {
 
 class _ToDoListPageState extends State<ToDoListPage> {
   final TextEditingController todoController = TextEditingController();
+  final TodoRepository todoRepository = TodoRepository();
 
   List<Todo> todos = [];
 
@@ -50,6 +52,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
                           todos.add(newTodo);
                         });
                         todoController.clear();
+                        todoRepository.saveTodoList(todos);
                       },
                       style: ElevatedButton.styleFrom(
                         foregroundColor: Colors.black12,
@@ -148,34 +151,36 @@ class _ToDoListPageState extends State<ToDoListPage> {
   void showDeleteTodoConfirmationDialog() {
     showDialog(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text('Limpar tudo?'),
-        content:
+      builder: (context) =>
+          AlertDialog(
+            title: Text('Limpar tudo?'),
+            content:
             Text('Você tem certeza que deseja apagar ${todos.length} terefas?'),
-        actions: [
-          TextButton(
-            onPressed: () {
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Color(0xff27FF00),
-            ),
-            child: Text('Cancelar'),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Color(0xff27FF00),
+                ),
+                child: Text('Cancelar'),
+              ),
+              TextButton(
+                onPressed: () {
+                  deleteAllTodos();
+                  Navigator.of(context).pop();
+                },
+                style: TextButton.styleFrom(
+                  foregroundColor: Color(0xffFF0000),
+                ),
+                child: Text('Limpar tudo'),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () {
-              deleteAllTodos();
-              Navigator.of(context).pop();
-            },
-            style: TextButton.styleFrom(
-              foregroundColor: Color(0xffFF0000),
-            ),
-            child: Text('Limpar tudo'),
-          ),
-        ],
-      ),
     );
   }
+
   void deleteAllTodos() {
     setState(() {
       todos.clear();
